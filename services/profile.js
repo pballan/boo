@@ -1,39 +1,50 @@
-'use strict';
+"use strict";
 
-const model = require("../schemas/profile").profileModel
+const profileModel = require("../schemas/profile").profileModel;
+const commentModel = require("../schemas/comment").commentModel;
 
 async function createProfile(params) {
+  let profile = await profileModel.create({
+    name: params.name,
+    description: params.description,
+    mbti: params.mbti,
+    enneagram: params.enneagram,
+    variant: params.variant,
+    tritype: params.tritype,
+    socionics: params.socionics,
+    sloan: params.sloan,
+    psyche: params.psyche,
+    image: params.image,
+  });
 
-    await model.create({
-        "id": params.id,
-        "name": params.name,
-        "description": params.description,
-        "mbti": params.mbti,
-        "enneagram": params.enneagram,
-        "variant": params.variant,
-        "tritype": params.tritype,
-        "socionics": params.socionics,
-        "sloan": params.sloan,
-        "psyche": params.psyche,
-        "image": params.image,
-        })
-    
-    return {status: "ok", code: "FOUND", message: "ok"}
+  return {
+    status: 200,
+    message: "profile created",
+    id: profile.id.toString(),
+  };
 }
 
-async function findProfile(id){
-    
-    let profiles = await model.find({id: id})
-    
-    profiles.forEach((p)=> {
-        console.log(p)
-    })
-
-    if(!profiles[0]) return {status: "error", code: "NOT_FOUND", message: "missing profile"}
-
-    return {status: "ok", message: "ok", data: {profile: profiles[0]}}
-
+async function findProfile(id) {
+  try {
+    let profiles = await profileModel.find({ id: id });
+    if (!profiles[0]) throw { status: 404, message: "missing profile" };
+    return { status: 200, message: "profile found", data: { profile: profiles[0] } };
+  } catch (error) {
+    throw { status: 500, message: "error finding profile in database" };
+  }
 }
 
+async function findProfileComments(id) {
+  try {
+    let profiles = await profileModel.find({ id: id });
+    if (!profiles[0]) return { status: 404, message: "profile does not exist" };
 
-module.exports = { createProfile, findProfile }
+    let comments = await commentModel.find({ id: id });
+
+    return { status: 200, message: "comments found", data: comments };
+  } catch (error) {
+    throw { status: 500, message: "error finding profile in database" };
+  }
+}
+
+module.exports = { createProfile, findProfile, findProfileComments };

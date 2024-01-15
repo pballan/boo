@@ -15,6 +15,7 @@
     "express": "^4.17.1",
     "nodemon": "^3.0.2",
     "mongodb-memory-server": "9.1.4",
-    "mongoose": "8.0.3"
+    "mongoose": "8.0.3",
+    "jsonschema": "1.4.1"
   }
 }

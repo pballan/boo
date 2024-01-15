@@ -1,21 +1,20 @@
-'use strict';
+"use strict";
 
-const mongoose = require('mongoose')
-  
-let profileSchema = new mongoose.Schema({
-    id: {type: Number, index: true},
-    name: String,
-    description: String,
-    mbti: String,
-    enneagram: String,
-    variant: String,
-    tritype: Number,
-    socionics: String,
-    sloan: String,
-    psyche: String,
-    image: String
-})
+const mongodb = require("../database/mongo");
 
-const Profile = mongoose.model('Profile', profileSchema)
+let profileSchema = new mongodb.Schema({
+  name: String,
+  description: String,
+  mbti: String,
+  enneagram: String,
+  variant: String,
+  tritype: Number,
+  socionics: String,
+  sloan: String,
+  psyche: String,
+  image: String,
+});
 
-module.exports = {profileModel: Profile}
+const Profile = mongodb.model("Profile", profileSchema);
+
+module.exports = { profileModel: Profile };
