@@ -1,1 +1,1 @@
-echo $(curl localhost:3000/profile/65a7763301d1b9065e527b97/comments )
+echo $(curl localhost:3000/profile/65aa163ab0444ac4db4544d1/comments )
