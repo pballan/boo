@@ -1,17 +1,10 @@
 const mongoose = require("../../database/mongo");
 const commentModel = require("../../schemas/comment").commentModel;
+const wait = require("../utils");
 
 const request = require("supertest");
 let app = require("../../app");
 let profile_id, post;
-
-function wait(ms) {
-  var start = new Date().getTime();
-  var end = start;
-  while (end < start + ms) {
-    end = new Date().getTime();
-  }
-}
 
 afterAll(() => {
   app.close();
@@ -69,13 +62,13 @@ describe("PUT /comment/like", () => {
 
     const comments_afterunlike = await request(app).get("/profile/" + profile_id + "/comments");
     expect(comments_afterunlike.body.payload[0].likes).toBe(0);
-  });
+  }, 10000);
 
   it("should return comment sorted by likes and date", async () => {
     const comment_3 = await request(app).post("/comment").send({
       profile_id: profile_id,
       commentator_id: "1234",
-      title: "alskjdaklsdasd ",
+      title: "tes2 ",
       mbti: "INTP",
       zodiac: "Pisces",
       enneagram: "9w8",
@@ -87,9 +80,9 @@ describe("PUT /comment/like", () => {
     const comment_1 = await request(app).post("/comment").send({
       profile_id: profile_id,
       commentator_id: "1234",
-      title: "alskjdaklsdasd ",
+      title: "test1 ",
       mbti: "INTP",
-      zodiac: "Pisces",
+      zodiac: "Taurus",
       enneagram: "9w8",
       text: "texto gegwgwegwege",
     });
@@ -194,7 +187,7 @@ describe("POST /comment", () => {
     expect(res.body.comment_id).toBeDefined();
   });
 
-  it("should not create a comment with invalid vote", async () => {
+  it("should not create a comment with invalid vote (mbti)", async () => {
     const res = await request(app).post("/comment").send({
       profile_id: profile_id,
       commentator_id: "1234",
@@ -202,6 +195,34 @@ describe("POST /comment", () => {
       zodiac: "Pisces",
       enneagram: "9w3",
       text: "texto gegwgwegwege",
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("error in data validation, wrong params");
+  });
+
+  it("should not create a comment with invalid vote (zodiac)", async () => {
+    const res = await request(app).post("/comment").send({
+      profile_id: profile_id,
+      commentator_id: "1234",
+      mbti: "INTP",
+      zodiac: "notvalid",
+      enneagram: "9w3",
+      text: "texto gegwgwegwege",
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("error in data validation, wrong params");
+  });
+
+  it("should not create a comment with invalid vote (enneagram)", async () => {
+    const res = await request(app).post("/comment").send({
+      profile_id: profile_id,
+      commentator_id: "1234",
+      mbti: "INTP",
+      zodiac: "Pisces",
+      enneagram: "notvalid",
+      text: "texto test",
     });
 
     expect(res.statusCode).toBe(400);

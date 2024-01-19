@@ -42,9 +42,14 @@ async function getComments(profile_id, sorting, filter) {
   // sorting = ['date', 'likes']
   // filter = ['mbti','zodiac','ennegram']
   try {
+    let filtering;
+    let query = { profile_id: profile_id };
+
     if (filter) {
-      let filtering = {};
-      filtering[filter] = { $exists: true };
+      filtering = {};
+      for (let k in filter) {
+        query[filter[k]] = { $exists: true };
+      }
     }
 
     let sort = { likes: "desc" };
@@ -53,7 +58,7 @@ async function getComments(profile_id, sorting, filter) {
       sort = { createdAt: -1 };
     }
 
-    let comments = await commentModel.find({ profile_id: profile_id }).sort(sort);
+    let comments = await commentModel.find(query).sort(sort);
 
     for (let c in comments) {
       comments[c].__v = undefined;
