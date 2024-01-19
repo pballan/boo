@@ -26,20 +26,31 @@ const profiles = [
 
 router.get("/:id", async function (req, res, next) {
   try {
-    let profile = await service.findProfile(req.params.id);
-    res.render("profile_template", {
-      profile: profile,
-    });
+    let result = await service.findProfile(req.params.id);
+    let payload = {
+      message: "profile found",
+      payload: { profile: result },
+      status: 200,
+    };
+
+    if (!result) {
+      payload.message = "missing profile";
+      payload.status = 404;
+    }
+
+    res.status(payload.status).send(payload);
   } catch (error) {
-    res.send(error.status).send(error.message);
+    res.status(error.status).send(error.message);
   }
 });
 
 router.get("/:id/comments", async function (req, res, next) {
   try {
     let id = req.params.id;
-    let result = await service.findProfileComments(id);
-    res.status(result.status).send(result);
+    let sorting = req.query.sorting;
+    let filter = req.query.filter;
+    let result = await service.getComments(id, sorting, filter);
+    res.status(result.status).send({ payload: result.comments });
   } catch (error) {
     res.status(error.status).send(error);
   }
@@ -57,7 +68,7 @@ router.post("/", async function (req, res, next) {
   try {
     let profile = req.body;
     let result = await service.createProfile(profile);
-    res.send("profile created, profile_id: " + result.id);
+    res.status(result.status).send(result);
   } catch (error) {
     res.status(error.status).send(error);
   }

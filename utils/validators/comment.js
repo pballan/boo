@@ -4,6 +4,8 @@ let commentValidation = {
   properties: {
     profile_id: { type: "string" },
     commentator_id: { type: "string" },
+    title: { type: "string" },
+    text: { type: "string" },
     mbti: {
       type: "string",
       enum: [

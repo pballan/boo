@@ -1,3 +1,1 @@
-65a4c7bc2d4c20be175b742d
-
-echo $(curl localhost:3000/profile/65a4c7bc2d4c20be175b742d/comments )
+echo $(curl localhost:3000/profile/65a60f9f17ad1002a51fa63b/comments )

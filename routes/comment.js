@@ -11,27 +11,45 @@ router.post("/", async function (req, res, next) {
   let v = validator.validate(req.body, commentValidation);
 
   if (!v.valid) {
-    res.status(400).send("error in data validation, wrong params");
+    res.status(400).send({ status: 400, message: "error in data validation, wrong params" });
     return;
   }
 
   try {
     let comment = req.body;
     let result = await service.createComment(comment);
-    res.send("comment created, comment_id: " + result.id);
+    res.status(201).send({
+      message: "comment created",
+      comment_id: result.id,
+      createdAt: result.createdAt,
+      updatedAt: result.updatedAt,
+    });
   } catch (error) {
     res.status(error.status).send(error);
   }
+  return;
 });
 
-router.get("/:id", async function (req, res, next) {
+router.put("/:comment_id/like", async function (req, res, next) {
   try {
-    let id = req.params.id;
-    let comment = await service.findComment(id);
-    res.send(comment);
+    let comment_id = req.params.comment_id;
+    let result = await service.updateCommentLike(comment_id);
+    res.send(result);
   } catch (error) {
     res.status(error.status).send(error);
   }
+  return;
+});
+
+router.put("/:comment_id/unlike", async function (req, res, next) {
+  try {
+    let comment_id = req.params.comment_id;
+    let result = await service.updateCommentUnlike(comment_id);
+    res.send(result);
+  } catch (error) {
+    res.status(error.status).send(error);
+  }
+  return;
 });
 
 module.exports = router;

@@ -1,0 +1,1 @@
+echo $(curl localhost:3000/profile/65a7763301d1b9065e527b97/comments )

@@ -9,6 +9,7 @@ let commentSchema = new mongodb.Schema(
       type: String,
     },
     title: String,
+    text: String,
     mbti: {
       type: String,
       enum: [
@@ -66,7 +67,7 @@ let commentSchema = new mongodb.Schema(
         "Pisces",
       ],
     },
-    likes: Number,
+    likes: { type: Number, min: 0 },
   },
   { timestamps: true }
 );

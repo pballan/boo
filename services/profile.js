@@ -4,47 +4,65 @@ const profileModel = require("../schemas/profile").profileModel;
 const commentModel = require("../schemas/comment").commentModel;
 
 async function createProfile(params) {
-  let profile = await profileModel.create({
-    name: params.name,
-    description: params.description,
-    mbti: params.mbti,
-    enneagram: params.enneagram,
-    variant: params.variant,
-    tritype: params.tritype,
-    socionics: params.socionics,
-    sloan: params.sloan,
-    psyche: params.psyche,
-    image: params.image,
-  });
+  try {
+    let profile = await profileModel.create({
+      name: params.name,
+      description: params.description,
+      mbti: params.mbti,
+      enneagram: params.enneagram,
+      variant: params.variant,
+      tritype: params.tritype,
+      socionics: params.socionics,
+      sloan: params.sloan,
+      psyche: params.psyche,
+      image: params.image,
+    });
 
-  return {
-    status: 200,
-    message: "profile created",
-    id: profile.id.toString(),
-  };
+    return {
+      status: 201,
+      message: "profile created",
+      id: profile.id.toString(),
+    };
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function findProfile(id) {
   try {
-    let profiles = await profileModel.find({ id: id });
-    if (!profiles[0]) throw { status: 404, message: "missing profile" };
-    return { status: 200, message: "profile found", data: { profile: profiles[0] } };
+    let profiles = await profileModel.find({ _id: id });
+    if (profiles[0]) profiles[0].__v = undefined;
+    return profiles[0];
   } catch (error) {
     throw { status: 500, message: "error finding profile in database" };
   }
 }
 
-async function findProfileComments(id) {
+async function getComments(profile_id, sorting, filter) {
+  // sorting = ['date', 'likes']
+  // filter = ['mbti','zodiac','ennegram']
   try {
-    let profiles = await profileModel.find({ id: id });
-    if (!profiles[0]) return { status: 404, message: "profile does not exist" };
+    if (filter) {
+      let filtering = {};
+      filtering[filter] = { $exists: true };
+    }
 
-    let comments = await commentModel.find({ id: id });
+    let sort = { likes: "desc" };
 
-    return { status: 200, message: "comments found", data: comments };
+    if (sorting == "date") {
+      sort = { createdAt: -1 };
+    }
+
+    let comments = await commentModel.find({ profile_id: profile_id }).sort(sort);
+
+    for (let c in comments) {
+      comments[c].__v = undefined;
+    }
+
+    return { status: 200, message: "comments found", comments: comments };
   } catch (error) {
-    throw { status: 500, message: "error finding profile in database" };
+    throw { status: 500, message: "internal error" };
   }
 }
 
-module.exports = { createProfile, findProfile, findProfileComments };
+module.exports = { createProfile, findProfile, getComments };
