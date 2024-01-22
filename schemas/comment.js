@@ -4,12 +4,13 @@ const mongodb = require("../database/mongo");
 
 let commentSchema = new mongodb.Schema(
   {
-    profile_id: { type: String, index: true },
+    profile_id: { type: String, index: true, required: true },
     commentator_id: {
       type: String,
+      required: true,
     },
-    title: String,
-    text: String,
+    title: { type: String, required: true },
+    text: { type: String },
     mbti: {
       type: String,
       enum: [

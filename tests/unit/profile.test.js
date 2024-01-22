@@ -87,7 +87,7 @@ describe("findProfile", () => {
   });
 });
 
-describe.only("getComments", () => {
+describe("getComments", () => {
   let comment_1, comment_2, comment_3, profile, comment_data_1, comment_data_2, comment_data_3;
   beforeAll(async () => {
     profile = {
@@ -173,12 +173,12 @@ describe.only("getComments", () => {
 
   it("should properly get comments from profile sorted by date", async () => {
     let result = await profileService.getComments(profile._id, "date");
-    expect(result.comments[2]._id).toStrictEqual(comment_data_3._id);
+    expect(result.comments[0]._id).toStrictEqual(comment_data_3._id);
     expect(result.comments[1]._id).toStrictEqual(comment_data_2._id);
-    expect(result.comments[0]._id).toStrictEqual(comment_data_1._id);
+    expect(result.comments[2]._id).toStrictEqual(comment_data_1._id);
   });
 
-  it.only("should properly get comments from profile filtered by zodiac", async () => {
+  it("should properly get comments from profile filtered by zodiac", async () => {
     let result = await profileService.getComments(profile._id, "date", ["zodiac"]);
     let comments_data = [comment_data_3._id, comment_data_1._id];
     expect(comments_data).toContainEqual(result.comments[0]._id);
